@@ -1,0 +1,14 @@
+a
+above
+below
+blue
+circle
+green
+is
+left
+of
+red
+right
+shape
+square
+triangle
