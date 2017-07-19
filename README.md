@@ -2,12 +2,12 @@
 
 This repository contains the code for the following paper:
 
-* R. Hu, J. Andreas, M. Rohrbach, T. Darrell, K. Saenko, *Learning to Reason: End-to-End Module Networks for Visual Question Answering*. in arXiv preprint arXiv:1704.05526, 2017. ([PDF](https://arxiv.org/pdf/1704.05526.pdf))
+* R. Hu, J. Andreas, M. Rohrbach, T. Darrell, K. Saenko, *Learning to Reason: End-to-End Module Networks for Visual Question Answering*. in ICCV, 2017. ([PDF](https://arxiv.org/pdf/1704.05526.pdf))
 ```
 @article{hu2017learning,
   title={Learning to Reason: End-to-End Module Networks for Visual Question Answering},
   author={Hu, Ronghang and Andreas, Jacob and Rohrbach, Marcus and Darrell, Trevor and Saenko, Kate},
-  journal={arXiv preprint arXiv:1704.05526},
+  journal={Proceedings of the IEEE International Conference on Computer Vision (ICCV)},
   year={2017}
 }
 ```
@@ -63,22 +63,32 @@ The saved features will take up approximately **29GB disk space** (for all image
     `python exp_clevr/train_clevr_gt_layout.py`  
     * Step b (policy search after cloning):  
     `python exp_clevr/train_clevr_rl_gt_layout.py`  
+    which is by default initialized from `exp_clevr/tfmodel/clevr_gt_layout/00050000` (the 50000-iteration snapshot in Step a). If you want to initialize from another snapshot, use the `--pretrained_model` flag to specify the snapshot path.
 
 2. Train without ground-truth layout (policy search from scratch)  
 `python exp_clevr/train_clevr_scratch.py`  
 
-Note: by default, the above scripts use GPU 0. To train on a different GPU, set the `--gpu_id` flag. During training, the script will write TensorBoard events to `exp_clevr/tb/` and save the snapshots under `exp_clevr/tfmodel/`.
+Note:
+* By default, the above scripts use GPU 0. To train on a different GPU, set the `--gpu_id` flag. During training, the script will write TensorBoard events to `exp_clevr/tb/` and save the snapshots under `exp_clevr/tfmodel/`.
+* Pre-trained models (TensorFlow snapshots) on CLEVR dataset can be downloaded from:  
+    - clevr_gt_layout (cloning expert): https://people.eecs.berkeley.edu/~ronghang/projects/n2nmn/models/clevr_gt_layout/  
+    - clevr_rl_gt_layout (policy search after cloning): https://people.eecs.berkeley.edu/~ronghang/projects/n2nmn/models/clevr_rl_gt_layout/  
+    - clevr_scratch (policy search from scratch): https://people.eecs.berkeley.edu/~ronghang/projects/n2nmn/models/clevr_scratch/  
+The downloaded snapshots should be placed under `exp_clevr/tfmodel/clevr_gt_layout`, `exp_clevr/tfmodel/clevr_rl_gt_layout` and `exp_clevr/tfmodel/clevr_scratch` respectively. You may evaluate their performance using the test code below.
 
 ### Test
 
 1. Evaluate *clevr_gt_layout* (cloning expert):  
-`python exp_clevr/eval_clevr.py --exp_name clevr_gt_layout --snapshot_name 00600000 --test_split val`
+`python exp_clevr/eval_clevr.py --exp_name clevr_gt_layout --snapshot_name 00050000 --test_split val`  
+Expected accuracy: 78.9% (on val split).
 
 2. Evaluate *clevr_rl_gt_layout* (policy search after cloning):  
-`python exp_clevr/eval_clevr.py --exp_name clevr_rl_gt_layout --snapshot_name 00300000 --test_split val`
+`python exp_clevr/eval_clevr.py --exp_name clevr_rl_gt_layout --snapshot_name 00050000 --test_split val`  
+Expected accuracy: 83.6% (on val split).
 
 3. Evaluate *clevr_scratch* (policy search from scratch):  
-`python exp_clevr/eval_clevr.py --exp_name train_clevr_scratch --snapshot_name 00100000 --test_split val`
+`python exp_clevr/eval_clevr.py --exp_name train_clevr_scratch --snapshot_name 00100000 --test_split val`  
+Expected accuracy: 69.1% (on val split).
 
 Note:
 * The above evaluation scripts will print out the accuracy (only for val split) and also save it under `exp_clevr/results/`. It will also save a prediction output file under `exp_clevr/eval_outputs/`.  
@@ -126,7 +136,7 @@ python build_vqa_imdb.py
 cd ../../
 ```
 
-Note: this repository already contains the parsing results from Stanford Parser for the VQA questions under `exp_vqa/data/parse/new_parse`, with the converted ground-truth (expert) layouts under `exp_vqa/data/gt_layout_*_new_parse.npy`.
+Note: this repository already contains the parsing results from Stanford Parser for the VQA questions under `exp_vqa/data/parse/new_parse` (parsed using [this script](https://gist.github.com/ronghanghu/67aeb391f4839611d119c73eba53bc5f)), with the converted ground-truth (expert) layouts under `exp_vqa/data/gt_layout_*_new_parse.npy` (converted using notebook `exp_vqa/data/convert_new_parse_to_gt_layout.ipynb`).
 
 ### Training
 
@@ -143,7 +153,7 @@ Note: by default, the above scripts use GPU 0, and train on the union of *train2
 2. Evaluate on *test2015*:  
 `python exp_vqa/eval_vqa.py --exp_name vqa_gt_layout --snapshot_name 00040000 --test_split test2015`
 
-Note: the above evaluation scripts will not print out the accuracy, but will write the prediction outputs to `exp_vqa/eval_outputs/`, which can be uploaded to the evaluation sever (http://www.visualqa.org/roe.html) for evaluation.
+Note: the above evaluation scripts will not print out the accuracy, but will write the prediction outputs to `exp_vqa/eval_outputs/`, which can be uploaded to the evaluation sever (http://www.visualqa.org/roe.html) for evaluation. The expected accuacy on test-dev2015 split is 64.2%.
 
 ## Train and evaluate on the SHAPES dataset
 
