@@ -112,7 +112,7 @@ exp_vqa/vqa-dataset/
     mscoco_val2014_annotations.json
 ```
 
-2. Download the COCO images from http://mscoco.org/, extract features from the images, and store them under `exp_vqa/data/resnet_res5c/`. In our experiments, we resize all the COCO images to 448 x 448, and use the *res5c* layer output of shape (1, 14, 14, 2048) from the [ResNet-152](https://github.com/KaimingHe/deep-residual-networks) network pretrained on ImageNET classification (feature stored as numpy array in HxWxC format).  
+2. Download the COCO images from http://mscoco.org/, extract features from the images, and store them under `exp_vqa/data/resnet_res5c/`. In our experiments, we resize all the COCO images to 448 x 448, and use the *res5c* layer output of shape (1, 14, 14, 2048) from the [ResNet-152](https://github.com/KaimingHe/deep-residual-networks) network pretrained on ImageNET classification (feature stored as numpy array in HxWxC format). **In our experiments, we use the same ResNet-152 res5c features as in [MCB](https://github.com/akirafukui/vqa-mcb), except that the extracted features are stored in NHWC format (instead of NCHW format used in MCB).** 
 
 The saved features will take up approximately **307GB disk space** (for all images in COCO train2014, val2014 and test2015). After feature extraction, the file structure for the features should look like
 ```
@@ -143,7 +143,10 @@ Note: this repository already contains the parsing results from Stanford Parser 
 1. Train with ground-truth layout (cloning expert)  
 `python exp_vqa/train_vqa_gt_layout.py`  
 
-Note: by default, the above scripts use GPU 0, and train on the union of *train2014* and *val2014* splits. To train on a different GPU, set the `--gpu_id` flag. During training, the script will write TensorBoard events to `exp_vqa/tb/` and save the snapshots under `exp_vqa/tfmodel/`.
+Note:
+* By default, the above scripts use GPU 0, and train on the union of *train2014* and *val2014* splits. To train on a different GPU, set the `--gpu_id` flag. During training, the script will write TensorBoard events to `exp_vqa/tb/` and save the snapshots under `exp_vqa/tfmodel/`.
+* Pre-trained models (TensorFlow snapshots) on VQA dataset can be downloaded from: https://people.eecs.berkeley.edu/~ronghang/projects/n2nmn/models/vqa_gt_layout/  
+The downloaded snapshots should be placed under `exp_vqa/tfmodel/vqa_gt_layout`. You may evaluate their performance using the test code below.
 
 ### Test
 
