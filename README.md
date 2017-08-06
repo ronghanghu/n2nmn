@@ -4,10 +4,10 @@ This repository contains the code for the following paper:
 
 * R. Hu, J. Andreas, M. Rohrbach, T. Darrell, K. Saenko, *Learning to Reason: End-to-End Module Networks for Visual Question Answering*. in ICCV, 2017. ([PDF](https://arxiv.org/pdf/1704.05526.pdf))
 ```
-@article{hu2017learning,
+@inproceedings{hu2017learning,
   title={Learning to Reason: End-to-End Module Networks for Visual Question Answering},
   author={Hu, Ronghang and Andreas, Jacob and Rohrbach, Marcus and Darrell, Trevor and Saenko, Kate},
-  journal={Proceedings of the IEEE International Conference on Computer Vision (ICCV)},
+  booktitle={Proceedings of the IEEE International Conference on Computer Vision (ICCV)},
   year={2017}
 }
 ```
