@@ -52,7 +52,7 @@ imdb_file_tst = './exp_vqa/data/imdb/imdb_%s.npy' % tst_image_set
 
 save_file = './exp_vqa/results/%s/%s.%s.txt' % (exp_name, snapshot_name, tst_image_set)
 os.makedirs(os.path.dirname(save_file), exist_ok=True)
-eval_output_name = 'OpenEnded_mscoco_%s_%s_%s_results.json' % (tst_image_set, exp_name, snapshot_name)
+eval_output_name = 'vqa_OpenEnded_mscoco_%s_%s_%s_results.json' % (tst_image_set, exp_name, snapshot_name)
 eval_output_file = './exp_vqa/eval_outputs/%s/%s' % (exp_name, eval_output_name)
 os.makedirs(os.path.dirname(eval_output_file), exist_ok=True)
 

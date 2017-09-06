@@ -140,23 +140,35 @@ Note: this repository already contains the parsing results from Stanford Parser 
 
 ### Training
 
-1. Train with ground-truth layout (cloning expert)  
+Train with ground-truth layout:
+
+1. Step a (cloning expert):  
 `python exp_vqa/train_vqa_gt_layout.py`  
+2. Step b (policy search after cloning):  
+`python exp_vqa/train_vqa_rl_gt_layout.py`
 
 Note:
 * By default, the above scripts use GPU 0, and train on the union of *train2014* and *val2014* splits. To train on a different GPU, set the `--gpu_id` flag. During training, the script will write TensorBoard events to `exp_vqa/tb/` and save the snapshots under `exp_vqa/tfmodel/`.
-* Pre-trained models (TensorFlow snapshots) on VQA dataset can be downloaded from: https://people.eecs.berkeley.edu/~ronghang/projects/n2nmn/models/vqa_gt_layout/  
-The downloaded snapshots should be placed under `exp_vqa/tfmodel/vqa_gt_layout`. You may evaluate their performance using the test code below.
+* Pre-trained models (TensorFlow snapshots) on VQA dataset can be downloaded from:  
+    - vqa_gt_layout (cloning expert): https://people.eecs.berkeley.edu/~ronghang/projects/n2nmn/models/vqa_gt_layout/
+    - vqa_rl_gt_layout (policy search after cloning): https://people.eecs.berkeley.edu/~ronghang/projects/n2nmn/models/vqa_rl_gt_layout/
+The downloaded snapshots should be placed under `exp_vqa/tfmodel/vqa_gt_layout` and `exp_vqa/tfmodel/vqa_rl_gt_layout`. You may evaluate their performance using the test code below.
 
 ### Test
 
-1. Evaluate on *test-dev2015*:  
-`python exp_vqa/eval_vqa.py --exp_name vqa_gt_layout --snapshot_name 00040000 --test_split test-dev2015`
+1. Evaluate on *vqa_gt_layout* (cloning expert):  
+    - (on test-dev2015 split):  
+    `python exp_vqa/eval_vqa.py --exp_name vqa_gt_layout --snapshot_name 00040000 --test_split test-dev2015`
+    - (on test2015 split):  
+    `python exp_vqa/eval_vqa.py --exp_name vqa_gt_layout --snapshot_name 00040000 --test_split test2015`
 
-2. Evaluate on *test2015*:  
-`python exp_vqa/eval_vqa.py --exp_name vqa_gt_layout --snapshot_name 00040000 --test_split test2015`
+2. Evaluate on *vqa_rl_gt_layout* (policy search after cloning):  
+    - (on test-dev2015 split):  
+    `python exp_vqa/eval_vqa.py --exp_name vqa_rl_gt_layout --snapshot_name 00040000 --test_split test-dev2015`
+    - (on test2015 split):  
+    `python exp_vqa/eval_vqa.py --exp_name vqa_rl_gt_layout --snapshot_name 00040000 --test_split test2015`
 
-Note: the above evaluation scripts will not print out the accuracy, but will write the prediction outputs to `exp_vqa/eval_outputs/`, which can be uploaded to the evaluation sever (http://www.visualqa.org/roe.html) for evaluation. The expected accuacy on test-dev2015 split is 64.2%.
+Note: the above evaluation scripts will not print out the accuracy, but will write the prediction outputs to `exp_vqa/eval_outputs/`, which can be uploaded to the evaluation sever (http://www.visualqa.org/roe.html) for evaluation. The expected accuacy of *vqa_rl_gt_layout* on test-dev2015 split is 64.9%.
 
 ## Train and evaluate on the SHAPES dataset
 

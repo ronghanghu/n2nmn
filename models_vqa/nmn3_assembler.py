@@ -7,36 +7,16 @@ from tensorflow import convert_to_tensor as to_T
 
 # the number of attention input to each module
 _module_input_num = {
-    '_Scene': 0,
     '_Find': 0,
-    '_Filter': 1,
-    '_FindSameProperty': 1,
     '_Transform': 1,
     '_And': 2,
-    '_Or': 2,
-    '_Count': 1,
-    '_Exist': 1,
-    '_EqualNum': 2,
-    '_MoreNum': 2,
-    '_LessNum': 2,
-    '_SameProperty': 2,
     '_Describe': 1}
 
 # output type of each module
 _module_output_type = {
-    '_Scene': 'att',
     '_Find': 'att',
-    '_Filter': 'att',
-    '_FindSameProperty': 'att',
     '_Transform': 'att',
     '_And': 'att',
-    '_Or': 'att',
-    '_Count': 'ans',
-    '_Exist': 'ans',
-    '_EqualNum': 'ans',
-    '_MoreNum': 'ans',
-    '_LessNum': 'ans',
-    '_SameProperty': 'ans',
     '_Describe': 'ans'}
 
 INVALID_EXPR = 'INVALID_EXPR'

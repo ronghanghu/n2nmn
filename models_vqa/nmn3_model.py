@@ -64,25 +64,10 @@ class NMN3Model:
                 att_shape = image_feat_grid.get_shape().as_list()[1:-1] + [1]
                 # Forward declaration of module recursion
                 att_expr_decl = td.ForwardDeclaration(td.PyObjectType(), td.TensorType(att_shape))
-                # _Scene
-                case_scene = td.Record([('time_idx', td.Scalar(dtype='int32')),
-                                       ('batch_idx', td.Scalar(dtype='int32'))])
-                case_scene = case_scene >> td.Function(modules.SceneModule)
                 # _Find
                 case_find = td.Record([('time_idx', td.Scalar(dtype='int32')),
                                        ('batch_idx', td.Scalar(dtype='int32'))])
                 case_find = case_find >> td.Function(modules.FindModule)
-                # _Filter
-                case_filter = td.Record([('input_0', att_expr_decl()),
-                                         ('time_idx', td.Scalar(dtype='int32')),
-                                         ('batch_idx', td.Scalar(dtype='int32'))])
-                case_filter = case_filter >> td.Function(modules.FilterModule)
-                # _FindSameProperty
-                case_find_same_property = td.Record([('input_0', att_expr_decl()),
-                                                     ('time_idx', td.Scalar(dtype='int32')),
-                                                     ('batch_idx', td.Scalar(dtype='int32'))])
-                case_find_same_property = case_find_same_property >> \
-                    td.Function(modules.FindSamePropertyModule)
                 # _Transform
                 case_transform = td.Record([('input_0', att_expr_decl()),
                                             ('time_idx', td.Scalar('int32')),
@@ -94,47 +79,6 @@ class NMN3Model:
                                       ('time_idx', td.Scalar('int32')),
                                       ('batch_idx', td.Scalar('int32'))])
                 case_and = case_and >> td.Function(modules.AndModule)
-                # _Or
-                case_or = td.Record([('input_0', att_expr_decl()),
-                                     ('input_1', att_expr_decl()),
-                                     ('time_idx', td.Scalar('int32')),
-                                     ('batch_idx', td.Scalar('int32'))])
-                case_or = case_or >> td.Function(modules.OrModule)
-                # _Exist
-                case_exist = td.Record([('input_0', att_expr_decl()),
-                                        ('time_idx', td.Scalar('int32')),
-                                        ('batch_idx', td.Scalar('int32'))])
-                case_exist = case_exist >> td.Function(modules.ExistModule)
-                # _Count
-                case_count = td.Record([('input_0', att_expr_decl()),
-                                        ('time_idx', td.Scalar('int32')),
-                                        ('batch_idx', td.Scalar('int32'))])
-                case_count = case_count >> td.Function(modules.CountModule)
-                # _EqualNum
-                case_equal_num = td.Record([('input_0', att_expr_decl()),
-                                            ('input_1', att_expr_decl()),
-                                            ('time_idx', td.Scalar('int32')),
-                                            ('batch_idx', td.Scalar('int32'))])
-                case_equal_num = case_equal_num >> td.Function(modules.EqualNumModule)
-                # _MoreNum
-                case_more_num = td.Record([('input_0', att_expr_decl()),
-                                            ('input_1', att_expr_decl()),
-                                            ('time_idx', td.Scalar('int32')),
-                                            ('batch_idx', td.Scalar('int32'))])
-                case_more_num = case_more_num >> td.Function(modules.MoreNumModule)
-                # _LessNum
-                case_less_num = td.Record([('input_0', att_expr_decl()),
-                                            ('input_1', att_expr_decl()),
-                                            ('time_idx', td.Scalar('int32')),
-                                            ('batch_idx', td.Scalar('int32'))])
-                case_less_num = case_less_num >> td.Function(modules.LessNumModule)
-                # _SameProperty
-                case_same_property = td.Record([('input_0', att_expr_decl()),
-                                                ('input_1', att_expr_decl()),
-                                                ('time_idx', td.Scalar('int32')),
-                                                ('batch_idx', td.Scalar('int32'))])
-                case_same_property = case_same_property >> \
-                    td.Function(modules.SamePropertyModule)
                 # _Describe
                 case_describe = td.Record([('input_0', att_expr_decl()),
                                            ('time_idx', td.Scalar('int32')),
@@ -143,25 +87,15 @@ class NMN3Model:
                     td.Function(modules.DescribeModule)
 
                 recursion_cases = td.OneOf(td.GetItem('module'), {
-                    '_Scene': case_scene,
                     '_Find': case_find,
-                    '_Filter': case_filter,
-                    '_FindSameProperty': case_find_same_property,
                     '_Transform': case_transform,
-                    '_And': case_and,
-                    '_Or': case_or})
+                    '_And': case_and})
                 att_expr_decl.resolve_to(recursion_cases)
 
                 # For invalid expressions, define a dummy answer
                 # so that all answers have the same form
                 dummy_scores = td.Void() >> td.FromTensor(np.zeros(num_choices, np.float32))
                 output_scores = td.OneOf(td.GetItem('module'), {
-                    '_Exist': case_exist,
-                    '_Count': case_count,
-                    '_EqualNum': case_equal_num,
-                    '_MoreNum': case_more_num,
-                    '_LessNum': case_less_num,
-                    '_SameProperty': case_same_property,
                     '_Describe': case_describe,
                     INVALID_EXPR: dummy_scores})
 
