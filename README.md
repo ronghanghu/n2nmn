@@ -58,6 +58,8 @@ The saved features will take up approximately **29GB disk space** (for all image
 
 ### Training
 
+0. Add the root of this repository to PYTHONPATH: `export PYTHONPATH=.:$PYTHONPATH`  
+
 1. Train with ground-truth layout (cloning expert + policy search after cloning)  
     * Step a (cloning expert):  
     `python exp_clevr/train_clevr_gt_layout.py`  
@@ -77,6 +79,8 @@ Note:
 The downloaded snapshots should be placed under `exp_clevr/tfmodel/clevr_gt_layout`, `exp_clevr/tfmodel/clevr_rl_gt_layout` and `exp_clevr/tfmodel/clevr_scratch` respectively. You may evaluate their performance using the test code below.
 
 ### Test
+
+0. Add the root of this repository to PYTHONPATH: `export PYTHONPATH=.:$PYTHONPATH`  
 
 1. Evaluate *clevr_gt_layout* (cloning expert):  
 `python exp_clevr/eval_clevr.py --exp_name clevr_gt_layout --snapshot_name 00050000 --test_split val`  
@@ -142,6 +146,7 @@ Note: this repository already contains the parsing results from Stanford Parser 
 
 Train with ground-truth layout:
 
+0. Add the root of this repository to PYTHONPATH: `export PYTHONPATH=.:$PYTHONPATH`  
 1. Step a (cloning expert):  
 `python exp_vqa/train_vqa_gt_layout.py`  
 2. Step b (policy search after cloning):  
@@ -155,6 +160,8 @@ Note:
 The downloaded snapshots should be placed under `exp_vqa/tfmodel/vqa_gt_layout` and `exp_vqa/tfmodel/vqa_rl_gt_layout`. You may evaluate their performance using the test code below.
 
 ### Test
+
+0. Add the root of this repository to PYTHONPATH: `export PYTHONPATH=.:$PYTHONPATH`  
 
 1. Evaluate on *vqa_gt_layout* (cloning expert):  
     - (on test-dev2015 split):  
@@ -176,6 +183,8 @@ A copy of the SHAPES dataset is contained in this repository under `exp_shapes/s
 
 ### Training
 
+0. Add the root of this repository to PYTHONPATH: `export PYTHONPATH=.:$PYTHONPATH`  
+
 1. Train with ground-truth layout (behavioral cloning from expert):  
 `python exp_shapes/train_shapes_gt_layout.py`  
 
@@ -185,6 +194,8 @@ A copy of the SHAPES dataset is contained in this repository under `exp_shapes/s
 Note: by default, the above scripts use GPU 0. To train on a different GPU, set the `--gpu_id` flag. During training, the script will write TensorBoard events to `exp_shapes/tb/` and save the snapshots under `exp_shapes/tfmodel/`.
 
 ### Test
+
+0. Add the root of this repository to PYTHONPATH: `export PYTHONPATH=.:$PYTHONPATH`  
 
 1. Evaluate *shapes_gt_layout* (behavioral cloning from expert):  
 `python exp_shapes/eval_shapes.py --exp_name shapes_gt_layout --snapshot_name 00040000 --test_split test`  
