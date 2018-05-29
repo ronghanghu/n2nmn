@@ -205,7 +205,7 @@ class AttentionSeq2Seq:
                     token_prob = tf.reduce_sum(all_token_probs *
                                                tf.cast(mask, tf.float32), axis=1)
                     neg_entropy = tf.reduce_sum(all_token_probs *
-                                                tf.log(all_token_probs), axis=1)
+                                                tf.log(tf.maximum(1e-5, all_token_probs)), axis=1)
 
                     # is_eos_predicted is a [N] bool tensor, indicating whether
                     # <eos> has already been predicted previously in each sequence
