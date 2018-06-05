@@ -177,6 +177,86 @@ The downloaded snapshots should be placed under `exp_vqa/tfmodel/vqa_gt_layout` 
 
 Note: the above evaluation scripts will not print out the accuracy, but will write the prediction outputs to `exp_vqa/eval_outputs/`, which can be uploaded to the evaluation sever (http://www.visualqa.org/roe.html) for evaluation. The expected accuacy of *vqa_rl_gt_layout* on test-dev2015 split is 64.9%.
 
+## Train and evaluate on the VQAv2 dataset
+
+### Download and preprocess the data
+
+1. Download the VQAv2 dataset annotations from http://www.visualqa.org/download.html, and symbol link it to `exp_vqa/vqa-dataset`. After this step, the file structure should look like
+```
+exp_vqa/vqa-dataset/
+  Questions/
+    v2_OpenEnded_mscoco_train2014_questions.json
+    v2_OpenEnded_mscoco_val2014_questions.json
+    v2_OpenEnded_mscoco_test-dev2015_questions.jso
+    v2_OpenEnded_mscoco_test2015_questions.json
+  Annotations/
+    v2_mscoco_train2014_annotations.json
+    v2_mscoco_val2014_annotations.json
+    v2_mscoco_train2014_complementary_pairs.json
+    v2_mscoco_val2014_complementary_pairs.json
+```
+
+2. Download the COCO images from http://mscoco.org/, extract features from the images, and store them under `exp_vqa/data/resnet_res5c/`. In our experiments, we resize all the COCO images to 448 x 448, and use the *res5c* layer output of shape (1, 14, 14, 2048) from the [ResNet-152](https://github.com/KaimingHe/deep-residual-networks) network pretrained on ImageNET classification (feature stored as numpy array in HxWxC format). **In our experiments, we use the same ResNet-152 res5c features as in [MCB](https://github.com/akirafukui/vqa-mcb), except that the extracted features are stored in NHWC format (instead of NCHW format used in MCB).** 
+
+The saved features will take up approximately **307GB disk space** (for all images in COCO train2014, val2014 and test2015). After feature extraction, the file structure for the features should look like
+```
+exp_vqa/data/resnet_res5c/
+  train2014/
+    COCO_train2014_000000000009.npy
+    ...
+  val2014/
+    COCO_val2014_000000000042.npy
+    ...
+  test2015/
+    COCO_test2015_000000000001.npy
+    ...
+```
+where each of the `*.npy` file contains COCO image feature extracted from the *res5c* layer of the [ResNet-152](https://github.com/KaimingHe/deep-residual-networks) network, which is a numpy array of shape (1, 14, 14, 2048) and float32 type, stored in HxWxC format.  
+
+3. Build image collections (imdb) for VQAv2:  
+```
+cd ./exp_vqa/data/
+python build_vqa_v2_imdb.py
+cd ../../
+```
+
+Note: this repository already contains the parsing results from Stanford Parser for the VQAv2 questions under `exp_vqa/data/parse/new_parse_vqa_v2` (parsed using [this script](https://gist.github.com/ronghanghu/67aeb391f4839611d119c73eba53bc5f)), with the converted ground-truth (expert) layouts under `exp_vqa/data/v2_gt_layout_*_new_parse.npy`.
+
+### Training
+
+Train with ground-truth layout:
+
+0. Add the root of this repository to PYTHONPATH: `export PYTHONPATH=.:$PYTHONPATH`  
+1. Step a (cloning expert):  
+`python exp_vqa/train_vqa2_gt_layout.py`  
+2. Step b (policy search after cloning):  
+`python exp_vqa/train_vqa2_rl_gt_layout.py`
+
+Note:
+* By default, the above scripts use GPU 0, and train on the union of *train2014* and *val2014* splits. To train on a different GPU, set the `--gpu_id` flag. During training, the script will write TensorBoard events to `exp_vqa/tb/` and save the snapshots under `exp_vqa/tfmodel/`.
+* Pre-trained models (TensorFlow snapshots) on VQAv2 dataset can be downloaded from:  
+    - vqa2_gt_layout (cloning expert): https://people.eecs.berkeley.edu/~ronghang/projects/n2nmn/models/vqa2_gt_layout/
+    - vqa2_rl_gt_layout (policy search after cloning): https://people.eecs.berkeley.edu/~ronghang/projects/n2nmn/models/vqa2_rl_gt_layout/
+The downloaded snapshots should be placed under `exp_vqa/tfmodel/vqa2_gt_layout` and `exp_vqa/tfmodel/vqa2_rl_gt_layout`. You may evaluate their performance using the test code below.
+
+### Test
+
+0. Add the root of this repository to PYTHONPATH: `export PYTHONPATH=.:$PYTHONPATH`  
+
+1. Evaluate on *vqa2_gt_layout* (cloning expert):  
+    - (on test-dev2015 split):  
+    `python exp_vqa/eval_vqa2.py --exp_name vqa2_gt_layout --snapshot_name 00080000 --test_split test-dev2015`
+    - (on test2015 split):  
+    `python exp_vqa/eval_vqa2.py --exp_name vqa2_gt_layout --snapshot_name 00080000 --test_split test2015`
+
+2. Evaluate on *vqa2_rl_gt_layout* (policy search after cloning):  
+    - (on test-dev2015 split):  
+    `python exp_vqa/eval_vqa2.py --exp_name vqa2_rl_gt_layout --snapshot_name 00080000 --test_split test-dev2015`
+    - (on test2015 split):  
+    `python exp_vqa/eval_vqa2.py --exp_name vqa2_rl_gt_layout --snapshot_name 00080000 --test_split test2015`
+
+Note: the above evaluation scripts will not print out the accuracy, but will write the prediction outputs to `exp_vqa/eval_outputs/`, which can be uploaded to the evaluation sever (http://www.visualqa.org/roe.html) for evaluation. The expected accuacy of *vqa2_rl_gt_layout* on test-dev2015 split is 63.3%.
+
 ## Train and evaluate on the SHAPES dataset
 
 A copy of the SHAPES dataset is contained in this repository under `exp_shapes/shapes_dataset`. The ground-truth module layouts (expert layouts) we use in our experiments are also provided under `exp_shapes/data/*_symbols.json`. The script to obtain the expert layouts from the annotations is in `exp_shapes/data/get_ground_truth_layout.ipynb`.
